@@ -1,0 +1,112 @@
+/* css reset begin */
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td {
+  padding: 0;
+  margin: 0;
+}
+img {
+  border: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-size: 100%;
+  font-weight: normal;
+}
+input, button, textarea, select {
+  *font-size: 100%;
+}
+input {
+  background: transparent;
+  border: none;
+}
+input[type=submit] {
+  cursor: pointer;
+}
+body {
+  font: 14px/1.5 Helvetica, Arial, sans-serif;
+}
+ol, ul, li {
+  list-style: none;
+}
+button {
+  border: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+:link,
+:visited {
+  text-decoration: none;
+}
+:focus {
+  outline: 0;
+}
+pre {
+  font-family: "Lucida Console",Consolas,"Courier New",Tahoma;
+  color: #666;
+  text-indent: 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+/* css reset end */
+/* for HTML5 begin */
+article, aside, figure, figcaption, footer, header, hgroup, nav, section, summary {
+  display: block;
+}
+figure {
+  margin: 0;
+}
+/*正文*/
+#orientationData{
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.container{
+  perspective-origin: 50% 50%;
+  perspective:800px;
+}
+#cube{
+  width:200px;
+  height:300px;
+  margin:0 auto;
+  transform: translateZ(-800px) rotateX(0deg);
+  position:relative;
+  top:100px;
+  transform-style:preserve-3d;
+  transform-origin: 100px 100px 900px;
+}
+.page{
+  transform-origin:100px 100px 100px;
+  width:198px;
+  height:198px;
+  border:1px solid #222;
+  position:absolute;
+  font-size: 200px;
+  text-align: center;
+}
+#page1{
+  background: white;
+}
+#page2{
+  background: red;
+  transform: rotateY(90deg);
+}
+#page3{
+  background: orange;
+  transform: rotateY(-90deg);
+}
+#page4{
+  background: blue;
+  transform: rotateX(90deg);
+}
+#page5{
+  background: green;
+  transform: rotateX(-90deg);
+}
+#page6{
+  background: yellow;
+  transform: rotateX(180deg);
+}
