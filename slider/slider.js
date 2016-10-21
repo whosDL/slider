@@ -1,11 +1,11 @@
 var option = {
-    num:5,    //slider数量
-    sliderId:"slider",    //slider的id
-    sliderMedia:"sliderMedia",    //slider媒体查询的id
-    itemId:[],    //对应的物件盒子Id的前缀
-    basePath:"",    //slider图片的保存路径
-    switchTime:5000,    //slider切换时间
-    transformTime:1000, //slider过渡时间
+    num: 5,    //slider数量
+    sliderId: "slider",    //slider的id
+    sliderMedia: "sliderMedia",    //slider媒体查询的id
+    basePath: "images/",    //slider图片的保存路径
+    switchTime: 5000,    //slider切换时间
+    transformTime: 1000, //slider过渡时间
+    dots: true, //是否启用导航点
 };
 //函数节流
 function throttle(method,context){
@@ -24,18 +24,55 @@ var EventHandler = function(){
             };
         },window)
     }
+
+    //监听鼠标点击事件
+    window.onclick = function(e){
+        if (e.target.dataset.index) {
+            slider.switchTo(parseInt(e.target.dataset.index));
+            return;
+        }
+
+        switch(e.target.id){
+            case "forward":
+                slider.toNext();
+                break;
+            case "back":
+                slider.toPre();
+                break;
+        }
+    }
+
+    //滑动切换
+    var touch = [];
+    document.getElementById(option.sliderId).addEventListener("touchstart",function(e){
+        touch[0] = e;
+    },false);
+    document.getElementById(option.sliderId).addEventListener("touchend",function(e){
+        touch[1] = e;
+        var x1 = touch[0].changedTouches[0].clientX,
+            x2 = touch[1].changedTouches[0].clientX,
+            y1 = touch[0].changedTouches[0].clientY,
+            y2 = touch[1].changedTouches[0].clientY;
+        if (Math.abs((y2-y1)/(x2-x1))<=1) {
+            if (x1<x2) {
+                slider.toPre();
+            } else {
+                slider.toNext();
+            }
+        }
+    },false);
 };
 
 var Media = (function(){
     var mediaCatcher = /@media\s*screen\s*and\s*(?:\(\s*((?:max)?(?:min)?)-width:(\d*)px\)\s*){0,3}\n?\s*\{\n?\s*\[(.*)\]\n?\s*\}/g;
     var resolutions;
+    //获取媒体查询
+    var MediaObj = document.getElementById(option.sliderMedia);
+    //解析媒体查询
+    var mediaText = MediaObj.innerHTML;
 
     //构造函数
     Media = function(){
-        //获取媒体查询
-        var MediaObj = document.getElementById(option.sliderMedia);
-        //解析媒体查询
-        var mediaText = MediaObj.innerHTML;
         this.sliderMedia = [];
         while(resolutions = mediaCatcher.exec(mediaText)){
             var breakPoint = new BreakPoint(resolutions[resolutions.length - 1]);
@@ -91,13 +128,15 @@ var Slider = (function(){
     var timer,  //计时器
         currIndex,  //当前slider序号（从0开始）
         preIndex,   //正在离开的slider序号
-        switching = false;  //表示是否正在于切换中
-    //获取slider元素
-    var sliderNode = document.getElementById(option.sliderId);
-    var sliderUl = sliderNode.getElementsByTagName("ul")[0];
+        switching = false,  //表示是否正在于切换中
+        //获取slider元素
+        sliderNode = document.getElementById(option.sliderId);
+    var sliderUl = document.getElementById("sliderimg");
+    var sliders = sliderUl.getElementsByTagName("li");
+
     //设置slider图片
     Slider = function(){
-        this.sliders = sliderUl.getElementsByTagName("li");
+        this.sliders = sliders;
         //设置图片
         this.curImg = media.curBreak.imgs;
         for (var i = 0; i < this.sliders.length; i++) {
@@ -111,6 +150,24 @@ var Slider = (function(){
         }
         this.sliders[0].setAttribute("class","curr");
         currIndex = 0;
+
+        //创建导航点
+        if (option.dots) {
+            var sliderDotsUl = document.createElement("ul");
+            sliderNode.appendChild(sliderDotsUl);
+            sliderDotsUl.setAttribute("class","sliderdots");
+            for (var i = 0; i < sliders.length; i++) {
+                sliderDotsUl.appendChild(document.createElement("li")).dataset.index = i;
+            };
+            this.sliderDots = sliderDotsUl.getElementsByTagName("li");
+            this.sliderDots[0].setAttribute("class","currdot")
+        };
+
+        //创建前进后退按钮
+        if (option.btn) {
+
+        }
+
         this.refreshImg();
         this.play();
     };
@@ -125,20 +182,26 @@ var Slider = (function(){
 
     //播放slider
     Slider.prototype.switchTo = function(index){
+        clearTimeout(timer);
         var that = this;
         if (index == currIndex) {
             return; //阻止切换至当前slider
         } else if (switching == true) {
             return; //阻止切换过程中触发
         } else {
-            //切出slider
-            this.sliders[currIndex].setAttribute("class","out");
             //进入切换状态
             switching = true;
+            //切出slider
+            this.sliders[currIndex].setAttribute("class","out");
+            //切换点
+            if (option.dots) {
+                this.sliderDots[currIndex].setAttribute("class","");
+                this.sliderDots[index].setAttribute("class","currdot")
+            }
+            
             preIndex = currIndex;
             //重置slider
             setTimeout(function(){
-                that.sliders[preIndex].setAttribute("class","reset");
                 that.sliders[preIndex].setAttribute("class","ready");
                 //接触切换状态
                 switching = false;
@@ -179,7 +242,7 @@ var Slider = (function(){
             this.switchTo(currIndex - 1);
         }
     }
-
+    
     return Slider;
 })();
 

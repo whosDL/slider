@@ -1,4 +1,4 @@
-/* css reset begin */
+ css reset begin */
 body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td {
   padding: 0;
   margin: 0;
@@ -61,41 +61,95 @@ figure {
 /*正文*/
 #slider{
   width: 100%;
+  overflow: hidden;
 }
-#slider ul{
+#slider #sliderimg{
   width: 100%;
   padding-bottom: 31.796875%;
 }
-#slider ul li{
+#slider #sliderimg li{
   position:absolute;
   width: 100%;
 }
-#slider ul li img{
+#slider #sliderimg li img{
   width: 100%;
   height: 100%;
 }
 @media screen and (max-width: 1920px) {
-  #slider ul{
+  #slider #sliderimg{
     padding-bottom: 31.770833%;
   }
 }
 @media screen and (max-width: 1280px) {
-  #slider ul{
+  #slider #sliderimg{
     padding-bottom: 35.15625%;
   }
 }
 @media screen and (max-width: 960px) {
-  #slider ul{
+  #slider #sliderimg{
     padding-bottom: 41.666667%;
   }
 }
 @media screen and (max-width: 720px) {
-  #slider ul{
+  #slider #sliderimg{
     padding-bottom: 41.666667%;
   }
 }
+/*导航点*/
+#slider .sliderdots {
+  position: absolute;
+  left: 75%;
+  bottom: 5%;
+}
+#slider .sliderdots li{
+  display: inline-block;
+  padding: 4px;
+  margin: 0 4px;
+  font-size: 12px;
+  background-color: #fff;
+  border: 1px solid #FFF;
+  border-radius: 50%;
+  cursor: pointer;
+}
+#slider .sliderdots .currdot{
+  background-color: transparent;
+}
+/*按键*/
+#back{
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 50px;
+  height: 100%;
+  background: url("images/arl.png") no-repeat center;
+  z-index: 5;
+}
+#forward{
+  position: absolute;
+  right: -50px;
+  top: 0;
+  width: 50px;
+  height: 100%;
+  background: url("images/arr.png") no-repeat center;
+  z-index: 5;
+}
+#back, #forward {
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -ms-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  transition: all ease 0.3s;
+  cursor: pointer;
+}
+#slider:hover #back {
+  left: 0;
+}
+#slider:hover #forward {
+  right: 0;
+}
+/*切换方式*/
 /*渐入渐出*/
-#slider ul li{
+/*#slider #sliderimg li{
   opacity: 0;
   -webkit-transition: opacity 1s;
   -moz-transition: opacity 1s;
@@ -104,12 +158,39 @@ figure {
   transition: opacity 1s;
   
 }
-#slider ul .curr{
+#slider #sliderimg .curr{
   opacity: 1;
   -webkit-transition: opacity 1s;
   -moz-transition: opacity 1s;
   -ms-transition: opacity 1s;
   -o-transition: opacity 1s;
   transition: opacity 1s;
-}
+}*/
 /*左右横移*/
+#slider{
+  position: relative;
+}
+#slider #sliderimg li{
+  position:absolute;
+}
+#slider #sliderimg .ready{
+  opacity: 0;
+  right: -100%;
+}
+#slider #sliderimg .curr{
+  opacity: 1;
+  right: 0;
+  -webkit-transition: right 1s;
+  -moz-transition: right 1s;
+  -ms-transition: right 1s;
+  -o-transition: right 1s;
+  transition: right 1s;
+}
+#slider #sliderimg .out{
+  right: 100%;
+  -webkit-transition: right 1s;
+  -moz-transition: right 1s;
+  -ms-transition: right 1s;
+  -o-transition: right 1s;
+  transition: right 1s;
+}
