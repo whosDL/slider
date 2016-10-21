@@ -5,7 +5,9 @@ var option = {
     itemId:[],    //对应的物件盒子Id的前缀
     basePath:"",    //slider图片的保存路径
     switchTime:5000,    //slider切换时间
-}
+    transformTime:1000, //slider过渡时间
+};
+//函数节流
 function throttle(method,context){
     clearTimeout(method.tId);
     method.tId=setTimeout(function(){
@@ -14,12 +16,13 @@ function throttle(method,context){
 }
 
 var EventHandler = function(){
+    //监听浏览器窗口大小变化
     window.onresize = function(){
         throttle(function(){
-                    if(media.testBreak()){
-                        slider.refreshImg();
-                    };
-                },window)
+            if(media.testBreak()){
+                slider.refreshImg();
+            };
+        },window)
     }
 };
 
@@ -34,11 +37,8 @@ var Media = (function(){
         //解析媒体查询
         var mediaText = MediaObj.innerHTML;
         this.sliderMedia = [];
-        //循环获取每个媒体查询内容
         while(resolutions = mediaCatcher.exec(mediaText)){
-            //创建断点对象
             var breakPoint = new BreakPoint(resolutions[resolutions.length - 1]);
-            //写入max和min
             switch(resolutions.length){
                 case 4:
                     breakPoint[resolutions[1]] = resolutions[2];
@@ -53,7 +53,7 @@ var Media = (function(){
         }
         //移除媒体查询对象
         MediaObj.parentNode.removeChild(MediaObj);
-        //保存了与当前分辨率匹配的断点对象
+        //匹配断点
         this.testBreak();
     };
 
@@ -88,17 +88,31 @@ var BreakPoint = function(images){
 };
 
 var Slider = (function(){
+    var timer,  //计时器
+        currIndex,  //当前slider序号（从0开始）
+        preIndex,   //正在离开的slider序号
+        switching = false;  //表示是否正在于切换中
+    //获取slider元素
     var sliderNode = document.getElementById(option.sliderId);
     var sliderUl = sliderNode.getElementsByTagName("ul")[0];
+    //设置slider图片
     Slider = function(){
         this.sliders = sliderUl.getElementsByTagName("li");
+        //设置图片
         this.curImg = media.curBreak.imgs;
         for (var i = 0; i < this.sliders.length; i++) {
             var imgNode = document.createElement('img');
             imgNode.setAttribute("src", option.basePath + this.curImg[i]);
             this.sliders[i].appendChild(imgNode);
         }
+        //设置类名
+        for (var i = 0; i < this.sliders.length; i++) {
+            this.sliders[i].setAttribute("class","ready");
+        }
+        this.sliders[0].setAttribute("class","curr");
+        currIndex = 0;
         this.refreshImg();
+        this.play();
     };
 
     //更新slider图片
@@ -107,7 +121,65 @@ var Slider = (function(){
         for (var i = 0; i < this.sliders.length; i++) {
             this.sliders[i].getElementsByTagName("img")[0].setAttribute("src", option.basePath + this.curImg[i]);
         }
+    };
+
+    //播放slider
+    Slider.prototype.switchTo = function(index){
+        var that = this;
+        if (index == currIndex) {
+            return; //阻止切换至当前slider
+        } else if (switching == true) {
+            return; //阻止切换过程中触发
+        } else {
+            //切出slider
+            this.sliders[currIndex].setAttribute("class","out");
+            //进入切换状态
+            switching = true;
+            preIndex = currIndex;
+            //重置slider
+            setTimeout(function(){
+                that.sliders[preIndex].setAttribute("class","reset");
+                that.sliders[preIndex].setAttribute("class","ready");
+                //接触切换状态
+                switching = false;
+            },option.transformTime);
+            //切入slider
+            this.sliders[index].setAttribute("class","curr");
+            currIndex = index;
+            this.play();
+        }
+    };
+
+    //播放
+    Slider.prototype.play = function(){
+        var that = this;
+        timer = setTimeout(function(){
+            if (currIndex == that.sliders.length - 1) {
+                that.switchTo(0);
+            } else {
+                that.switchTo(currIndex + 1);
+            }
+        },option.switchTime);
+    };
+
+    //下一张
+    Slider.prototype.toNext = function(){
+        if (currIndex == this.sliders.length - 1) {
+            this.switchTo(0);
+        } else {
+            this.switchTo(currIndex + 1);
+        }
     }
+
+    //上一张
+    Slider.prototype.toPre = function(){
+        if (currIndex == 0) {
+            this.switchTo(this.sliders.length - 1);
+        } else {
+            this.switchTo(currIndex - 1);
+        }
+    }
+
     return Slider;
 })();
 
