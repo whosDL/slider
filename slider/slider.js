@@ -1,5 +1,4 @@
 var option = {
-    num: 5,    //slider数量
     sliderId: "slider",    //slider的id
     sliderMedia: "sliderMedia",    //slider媒体查询的id
     basePath: "images/",    //slider图片的保存路径
